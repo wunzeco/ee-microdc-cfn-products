@@ -1,0 +1,8 @@
+- name: Apptier instance
+  sudo: yes
+  hosts: localhost
+  vars: 
+    java_package: openjdk-8-jdk
+
+  roles:
+    - wunzeco.java
