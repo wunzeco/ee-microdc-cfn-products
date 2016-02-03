@@ -460,7 +460,7 @@ template do
         :VPC => ref('VPC'),
         :PrivateSubnets => fn_if('CreateMultipleAZs',
                                  join(',',ref('AppTierPrivateSubnetAZ1'),ref('AppTierPrivateSubnetAZ2')),
-                                 ref('PrivateSubnetAZ1')),
+                                 ref('AppTierPrivateSubnetAZ1')),
         :PublicSubnets => fn_if('CreateMultipleAZs',
                                 join(',',ref('PublicSubnetAZ1'),ref('PublicSubnetAZ2')),
                                 ref('PublicSubnetAZ1')),

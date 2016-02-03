@@ -96,6 +96,6 @@ template do
 
   output 'IAMRole',
     :Value => ref('IAMRole'),
-    :Description => join(" ", 'The access profile Id for',ref('AnsibleRole'))
+    :Description => "The access profile Id for default IAM Role"
 
 end.exec!
