@@ -72,7 +72,7 @@ template do
 
   # Resource creation
 
-  resource 'JenkinsSecurityGroup',
+  resource 'AppTierSecurityGroup',
     :Type => 'AWS::EC2::SecurityGroup',
     :Properties => {
       :GroupDescription => join(' ', 'Security Group for', ref('Purpose'), ' - ', ref('Application')),
@@ -90,7 +90,7 @@ template do
     }
 
   output 'SecurityGroup',
-    :Value => ref('JenkinsSecurityGroup'),
-    :Description => 'Jenkins Security Group Id'
+    :Value => ref('AppTierSecurityGroup'),
+    :Description => 'AppTier Security Group Id'
 
 end.exec!

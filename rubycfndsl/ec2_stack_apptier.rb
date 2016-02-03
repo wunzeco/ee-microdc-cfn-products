@@ -218,8 +218,8 @@ template do
       :LaunchConfigurationName => ref('LaunchConfig'),
       :LoadBalancerNames => [ref('ElasticLoadBalancer')],
       :MinSize => '1',
-      :MaxSize => '1',
-      :DesiredCapacity => '1',
+      :MaxSize => '2',
+      :DesiredCapacity => '2',
       :Tags => [
         { :Key => 'Name', :Value => join('-',ref('Application'),ref('EnvironmentName'),'ec2',ref('AnsibleRole')), :PropagateAtLaunch => "true"}, 
         { :Key => 'Environment', :Value => ref('EnvironmentName'), :PropagateAtLaunch => "true"}, 
