@@ -421,15 +421,16 @@ template do
   #   :Type => "AWS::Route53::HostedZone",
   #   :Properties => {
   #     :HostedZoneConfig => {
-  #       :Comment => join('',"Internal zone for ASA API ",ref("EnvironmentName"),' Environment')
+  #       :Comment => join('',"Internal zone for ",ref('Application'),'-',ref("EnvironmentName"),' Environment')
   #     },
   #     :HostedZoneTags => [
   #       { :Key => 'Name', :Value => join('-',ref('Application'),ref('EnvironmentName'),'zone') }, 
   #       { :Key => 'Environment', :Value => ref('EnvironmentName') }, 
   #       { :Key => 'Application', :Value => ref('Application') }, 
+  #       { :Key => 'Category', :Value => ref('Category') },
   #     ],
-  #     :Name => join('', ref('EnvironmentName'), '.datavirt.elsevier.internal'),
-  #     :VPCs => [ { :VPCId => ref('VPC'), :VPCRegion => "eu-west-1" } ]
+  #     :Name => join('.', ref('EnvironmentName'), ref('Application'), 'microdc', 'internal'),
+  #     :VPCs => [ { :VPCId => ref('VPC'), :VPCRegion => region } ]
   #   }
 
 
@@ -471,7 +472,7 @@ template do
         :BucketName => ref('BucketName'),
         :AnsibleRole => "apptier",
         :Category => ref('Category'),
-        #:HostedZone => 'api-cdt-test.elsevier.com',
+        :HostedZone => 'eemicrodc.equalexperts.com',
         :DefaultSecurityGroup => get_att('DefaultSecurityGroup','Outputs.SecurityGroup')
       }
     }

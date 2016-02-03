@@ -106,6 +106,12 @@ template do
   parameter 'NatAZ2IpAddress',
     :Type => 'String'
 
+  parameter 'HostedZone',
+    :Description => 'Hosted Zone to update',
+    :Type => 'String',
+    :ConstraintDescription => 'must contain only alphanumeric characters.',
+    :AllowedPattern => '[a-zA-Z0-9-\.]*'
+
   # Include Mappings under maps/*
   
   Dir[File.join(File.expand_path(File.dirname($0)),'maps','*')].each do |map|
@@ -158,16 +164,16 @@ template do
 
   # The Load balancer name
 
-  # resource "RecordSet",
-  #   :Type => "AWS::Route53::RecordSet",
-  #   :Properties => { 
-  #     :HostedZoneName => join('',ref('HostedZone'),'.'),
-  #     :Comment => join('',"DNS name for ELB ",ref('Purpose')),
-  #     :Name => join('','jenkins','.',ref('HostedZone'),'.'),
-  #     :Type => "CNAME",
-  #     :TTL => "60",
-  #     :ResourceRecords => [ get_att('ElasticLoadBalancer', 'DNSName')]
-  #   }
+  resource "RecordSet",
+    :Type => "AWS::Route53::RecordSet",
+    :Properties => { 
+      :HostedZoneName => join('',ref('HostedZone'),'.'),
+      :Comment => join('',"DNS name for ELB ",ref('Purpose')),
+      :Name => join('',ref('Application'),'-',ref('EnvironmentName'),'.',ref('HostedZone'),'.'),
+      :Type => "CNAME",
+      :TTL => "60",
+      :ResourceRecords => [ get_att('ElasticLoadBalancer', 'DNSName')]
+    }
 
   # The instance security group
 
