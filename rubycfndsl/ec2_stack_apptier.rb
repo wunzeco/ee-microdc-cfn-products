@@ -140,13 +140,12 @@ template do
       :HealthCheck => {
          :HealthyThreshold => '2',
          :Interval => '5',
-         :Target => 'TCP:8080',
+         :Target => 'TCP:9080',
          :Timeout => '2',
          :UnhealthyThreshold => '2'
       },
       :Listeners => [ 
-        { :LoadBalancerPort => "443", :InstancePort => "443", :Protocol => "TCP" },
-        { :LoadBalancerPort => "80", :InstancePort => "8080", :Protocol => "TCP" },
+        { :LoadBalancerPort => "80", :InstancePort => "9080", :Protocol => "TCP" },
       ],
       :Tags => [ 
         { :Key => 'Name', :Value => join('-',ref('Application'),ref('EnvironmentName'),'elb','public',ref('Purpose')) }, 
@@ -193,7 +192,7 @@ template do
     :Type => "AWS::CloudFormation::Stack",
     :Properties => {
       :TemplateURL => join('/', 'https://s3.amazonaws.com', ref('BucketName'), ref('Application'),
-                           ref('EnvironmentName'), 'cloudformation', join('','role_',ref('Purpose'),'.template')),
+                           ref('EnvironmentName'), 'cloudformation', 'role_default.template'),
       :Parameters => {
         :EnvironmentName => ref('EnvironmentName'),
         :Application => ref('Application'),

@@ -79,8 +79,8 @@ template do
       :GroupDescription => join(' ', 'Security Group for', ref('Purpose'), ' - ', ref('Application')),
       :VpcId => ref('VPC'),
       :SecurityGroupIngress => [
-        { "IpProtocol" => "tcp", "FromPort" => "443", "ToPort" => "443", "CidrIp" => "0.0.0.0/0" },
         { "IpProtocol" => "tcp", "FromPort" => "80", "ToPort" => "80", "CidrIp" => "0.0.0.0/0" },
+        { "IpProtocol" => "tcp", "FromPort" => "443", "ToPort" => "443", "CidrIp" => "0.0.0.0/0" },
       ],
       :Tags => [
         { :Key => 'Name', :Value => join('-', ref('Application'), ref('EnvironmentName'), 'sg', 'elb', ref('Purpose')) },

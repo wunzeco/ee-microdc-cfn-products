@@ -314,136 +314,20 @@ template do
       }
     }
  
-  # ###################################################################################################
-  # Jenkins Instance definition
-
-    resource "JENKINSStack",
-    :Type => "AWS::CloudFormation::Stack",
-    :DependsOn => "NatEc2InstanceAZ1v0",
-    :Properties => {
-      :TemplateURL => join("/","https://s3.amazonaws.com",ref('BucketName'),ref('Application'),
-                           ref('EnvironmentName'),'cloudformation','ec2_stack_jenkins.template'),
-      :Parameters => {
-        :NatAZ1IpAddress => get_att('NatEc2InstanceAZ1v0','Outputs.PublicIp'),
-        :NatAZ2IpAddress => fn_if('CreateMultipleAZs',
-                                  get_att('NatEc2InstanceAZ2v0','Outputs.PublicIp'),
-                                  get_att('NatEc2InstanceAZ1v0','Outputs.PublicIp')),
-        :EnvironmentName => ref('EnvironmentName'),
-        :Application => ref('Application'),
-        :VPC => ref('VPC'),
-        :PrivateSubnets => fn_if('CreateMultipleAZs',
-                                 join(',',ref('PrivateSubnetAZ1'),ref('PrivateSubnetAZ2')),
-                                 ref('PrivateSubnetAZ1')),
-        :PublicSubnets => fn_if('CreateMultipleAZs',
-                                join(',',ref('PublicSubnetAZ1'),ref('PublicSubnetAZ2')),
-                                ref('PublicSubnetAZ1')),
-        :ImageId => find_in_map('AMI', region, 'default'),
-        :InstanceType => 'm3.medium',
-        :KeyName => 'eemicrodc',
-        :Purpose => 'jenkins',
-        :BucketName => ref('BucketName'),
-        :AnsibleRole => "jenkins",
-        :Category => ref('Category'),
-        #:HostedZone => 'api-cdt-test.elsevier.com',
-        :DefaultSecurityGroup => get_att('DefaultSecurityGroup','Outputs.SecurityGroup')
-      }
-    }
- 
-  # resource "JenkinsIAMRole",
-  #   :Type => "AWS::CloudFormation::Stack",
-  #   :Properties => {
-  #     :TemplateURL => join("/","https://s3.amazonaws.com",ref('BucketName'),ref('Application'),
-  #                          ref('EnvironmentName'),'cloudformation','role_jenkins.template'),
-  #     :Parameters => {
-  #       :EnvironmentName => ref('EnvironmentName'),
-  #       :Application => ref('Application'),
-  #       :BucketName => ref('BucketName'),
-  #       :AnsibleRole => "jenkins",
-  #       :Category => ref('Category'),
-  #     }
-  #   }
-
-  #  resource "JenkinsSecurityGroup",
-  #    :Type => "AWS::CloudFormation::Stack",
-  #    :Properties => {
-  #      :TemplateURL => join("/","https://s3.amazonaws.com",ref('BucketName'),ref('Application'),
-  #                           ref('EnvironmentName'),'cloudformation','securitygroup_jenkins.template'),
-  #      :Parameters => {
-  #        :EnvironmentName => ref('EnvironmentName'),
-  #        :Application => ref('Application'),
-  #        :VPC => ref('VPC'),
-  #        :Purpose => 'jenkins',
-  #        :Category => ref('Category'),
-  #      }
-  #    }
- 
-  # resource "Jenkins",
-  #   :Type => "AWS::CloudFormation::Stack",
-  #   :Properties => {
-  #     :TemplateURL => join("/","https://s3.amazonaws.com",ref('BucketName'),ref('Application'),
-  #                          ref('EnvironmentName'),'cloudformation','ec2_stack_jenkins.template'),
-  #     :Parameters => {
-  #       :EnvironmentName => ref('EnvironmentName'),
-  #       :Application => ref('Application'),
-  #       :VPC => ref('VPC'),
-  #       :PrivateSubnets => fn_if('CreateMultipleAZs',
-  #                                join(',',ref('PrivateSubnetAZ1'),ref('PrivateSubnetAZ2')),
-  #                                ref('PrivateSubnetAZ1')),
-  #       :PublicSubnets => fn_if('CreateMultipleAZs',
-  #                               join(',',ref('PublicSubnetAZ1'),ref('PublicSubnetAZ2')),
-  #                               ref('PublicSubnetAZ1')),
-  #       :SubnetId => ref('PublicSubnetAZ2'),
-  #       :NatAZ1IpAddress => get_att('NatEc2InstanceAZ1v0','Outputs.PublicIp'),
-  #       :NatAZ2IpAddress => get_att('NatEc2InstanceAZ2v0','Outputs.PublicIp'),
-  #       :ImageId => find_in_map('AMI', region, 'default'),
-  #       :InstanceType => 'm3.medium',
-  #       :KeyName => 'eemicrodc',
-  #       :Purpose => 'jenkins',
-  #       :Category => ref('Category'),
-  #       :BucketName => ref('BucketName'),
-  #       :AnsibleRole => "jenkins",
-  #       :Role => get_att('JenkinsIAMRole','Outputs.IAMRole'),
-  #       :SecurityGroup => join(',', get_att('DefaultSecurityGroup','Outputs.SecurityGroup'),
-  #                              get_att('JenkinsSecurityGroup','Outputs.SecurityGroup'))
-  #     }
-  #   }
- 
-  #resource "ELBJenkins",
-  #  :Type => "AWS::CloudFormation::Stack",
-  #  :Properties => {
-  #    :TemplateURL => join("/","https://s3.amazonaws.com",ref('BucketName'),ref('Application'),
-  #                         ref('EnvironmentName'),'cloudformation','ec2_stack_elb_jenkins.template'),
-  #    :Parameters => {
-  #      :EnvironmentName => ref('EnvironmentName'),
-  #      :Application => ref('Application'),
-  #      :VPC => ref('VPC'),
-  #      :SubnetId => ref('PublicSubnetAZ2'),
-  #      :ImageId => find_in_map('AMI', region, 'default'),
-  #      :InstanceType => 'm3.medium',
-  #      :KeyName => 'eemicrodc',
-  #      :Purpose => 'Jenkins',
-  #      :Category => ref('Category'),
-  #      :BucketName => ref('BucketName'),
-  #      :AnsibleRole => "jenkins",
-  #      :Role => get_att('JenkinsIAMRole','Outputs.IAMRole'),
-  #      :SecurityGroup => join(',', get_att('DefaultSecurityGroup','Outputs.SecurityGroup'),
-  #                             get_att('JenkinsSecurityGroup','Outputs.SecurityGroup'))
-  #    }
-  #  }
  
   # ###################################################################################################
   # Private Subnets and routing tables
 
   # Subnets
 
-  resource 'PrivateSubnetAZ1',
+  resource 'AppTierPrivateSubnetAZ1',
     :Type => 'AWS::EC2::Subnet',
     :Properties => {
       :VpcId => ref('VPC'),
-      :CidrBlock => find_in_map(ref('EnvironmentName'), 'PrivateAZ1', 'CIDR'),
+      :CidrBlock => find_in_map(ref('EnvironmentName'), 'AppTierPrivateAZ1', 'CIDR'),
       :AvailabilityZone => ref('AvailabilityZone1'),
       :Tags => [
-        { :Key => 'Name', :Value => join('-',ref('Application'),ref('EnvironmentName'),'sn','privateAZ1') }, 
+        { :Key => 'Name', :Value => join('-',ref('Application'),ref('EnvironmentName'),'sn','apptier','privateAZ1') }, 
         { :Key => 'Environment', :Value => ref('EnvironmentName') }, 
         { :Key => 'Application', :Value => ref('Application') }, 
         { :Key => 'Purpose', :Value => 'privateAZ1' },
@@ -452,14 +336,14 @@ template do
 
   # Create subnet on AZ2 regardless. This is needed in case we need to 
   # Deploy an RDS instance on the VPC, which requires multiple AZs
-  resource 'PrivateSubnetAZ2',
+  resource 'AppTierPrivateSubnetAZ2',
     :Type => 'AWS::EC2::Subnet',
     :Properties => {
       :VpcId => ref('VPC'),
-      :CidrBlock => find_in_map(ref('EnvironmentName'), 'PrivateAZ2', 'CIDR'),
+      :CidrBlock => find_in_map(ref('EnvironmentName'), 'AppTierPrivateAZ2', 'CIDR'),
       :AvailabilityZone => ref('AvailabilityZone2'),
       :Tags => [
-        { :Key => 'Name', :Value => join('-',ref('Application'),ref('EnvironmentName'),'sn','privateAZ2') }, 
+        { :Key => 'Name', :Value => join('-',ref('Application'),ref('EnvironmentName'),'sn','apptier','privateAZ2') }, 
         { :Key => 'Environment', :Value => ref('EnvironmentName') }, 
         { :Key => 'Application', :Value => ref('Application') }, 
         { :Key => 'Purpose', :Value => 'privateAZ2' },
@@ -516,18 +400,18 @@ template do
 
   # Route table asociation:
 
-  resource 'PrivateSubnetRouteTableAssociationAZ1',
+  resource 'AppTierPrivateSubnetRouteTableAssociationAZ1',
     :Type => 'AWS::EC2::SubnetRouteTableAssociation',
     :Properties => {
-      :SubnetId => ref('PrivateSubnetAZ1'),
+      :SubnetId => ref('AppTierPrivateSubnetAZ1'),
       :RouteTableId => ref('PrivateRouteTableAZ1'),
   }
 
-  resource 'PrivateSubnetRouteTableAssociationAZ2',
+  resource 'AppTierPrivateSubnetRouteTableAssociationAZ2',
     :Condition => "CreateMultipleAZs",
     :Type => 'AWS::EC2::SubnetRouteTableAssociation',
     :Properties => {
-      :SubnetId => ref('PrivateSubnetAZ2'),
+      :SubnetId => ref('AppTierPrivateSubnetAZ2'),
       :RouteTableId => ref('PrivateRouteTableAZ2'),
     }
 
@@ -557,6 +441,40 @@ template do
   ####################################################################################################
   ####################################################################################################
 
+  # ###################################################################################################
+  # AppTier Stack definition
+
+    resource "AppTierStack",
+    :Type => "AWS::CloudFormation::Stack",
+    :DependsOn => "NatEc2InstanceAZ1v0",
+    :Properties => {
+      :TemplateURL => join("/","https://s3.amazonaws.com",ref('BucketName'),ref('Application'),
+                           ref('EnvironmentName'),'cloudformation','ec2_stack_apptier.template'),
+      :Parameters => {
+        :NatAZ1IpAddress => get_att('NatEc2InstanceAZ1v0','Outputs.PublicIp'),
+        :NatAZ2IpAddress => fn_if('CreateMultipleAZs',
+                                  get_att('NatEc2InstanceAZ2v0','Outputs.PublicIp'),
+                                  get_att('NatEc2InstanceAZ1v0','Outputs.PublicIp')),
+        :EnvironmentName => ref('EnvironmentName'),
+        :Application => ref('Application'),
+        :VPC => ref('VPC'),
+        :PrivateSubnets => fn_if('CreateMultipleAZs',
+                                 join(',',ref('AppTierPrivateSubnetAZ1'),ref('AppTierPrivateSubnetAZ2')),
+                                 ref('PrivateSubnetAZ1')),
+        :PublicSubnets => fn_if('CreateMultipleAZs',
+                                join(',',ref('PublicSubnetAZ1'),ref('PublicSubnetAZ2')),
+                                ref('PublicSubnetAZ1')),
+        :ImageId => find_in_map('AMI', region, 'default'),
+        :InstanceType => 'm3.medium',
+        :KeyName => 'eemicrodc',
+        :Purpose => 'apptier',
+        :BucketName => ref('BucketName'),
+        :AnsibleRole => "apptier",
+        :Category => ref('Category'),
+        #:HostedZone => 'api-cdt-test.elsevier.com',
+        :DefaultSecurityGroup => get_att('DefaultSecurityGroup','Outputs.SecurityGroup')
+      }
+    }
 
 
 end.exec!

@@ -63,7 +63,7 @@ template do
 
   # Resource creation
 
-  resource "JenkinsIAMRole",
+  resource "IAMRole",
     :Type =>"AWS::IAM::Role",
     :Properties => {
       :AssumeRolePolicyDocument => {
@@ -89,13 +89,13 @@ template do
         :Application => ref('Application'),
         :BucketName => ref('BucketName'),
         :AnsibleRole => ref('AnsibleRole'),
-        :Role => ref('JenkinsIAMRole'),
+        :Role => ref('IAMRole'),
       }
     }
 
 
   output 'IAMRole',
-    :Value => ref('JenkinsIAMRole'),
-    :Description => 'The access profile Id for Jenkins'
+    :Value => ref('IAMRole'),
+    :Description => join(" ", 'The access profile Id for',ref('AnsibleRole'))
 
 end.exec!
