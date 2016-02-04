@@ -1,0 +1,10 @@
+# from galaxy
+- src: ogonna.iwunze.docker
+- src: ogonna.iwunze.jenkins
+- src: wunzeco.java
+- src: wunzeco.mongodb
+
+# from GitHub, overriding the name and specifying a specific tag
+- src: https://github.com/wunzeco/ansible-appdeploy
+  version: master
+  name: appdeploy
