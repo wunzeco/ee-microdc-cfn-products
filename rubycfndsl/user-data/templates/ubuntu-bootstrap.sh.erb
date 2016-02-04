@@ -6,6 +6,7 @@
 # The bootstrap log file:
 LOG_FILE=/var/log/bootstrap.log
 REGION='<%= ENV["AWS_REGION"] || ENV["AWS_DEFAULT_REGION"] || "eu-west-1" %>'
+BUILD_NUMBER='<%= ENV["EV_BUILD_NUMBER"] || "99.99.99" %>'
 
 # Script error handling and output redirect
 set -e                               # Fail on error
@@ -62,6 +63,7 @@ export BUCKET_URL="s3://${BUCKET_NAME}/${APPLICATION}/${ENVIRONMENT}"
 
 ################################################################################
 # Download Ansible manifests and run it
+ANSIBLE_LOG=/tmp/ansible.log
 
 # Remove requiretty
 sed -ri '/requiretty/d' /etc/sudoers
@@ -75,6 +77,8 @@ aws s3 cp ${BUCKET_URL}/ansible/version .
 # Run it
 ansible-playbook --connection=local -i environments/${ENVIRONMENT}/inventory playbooks/${ANSIBLE_ROLE}.yml 
 
-#exit 0
+ANSIBLE_STATUS="$(cat ${ANSIBLE_LOG} | grep -E 'ok.*changed.*unreachable.*failed' | tail 0 | awk -F: '{OFS=":";print $NF;}' | xargs)"
+aws ec2 create-tags --region $REGION --resources ${INSTANCE_ID} --tags "Key=BuildNumber,Value='${BUILD_NUMBER}'"
+aws ec2 create-tags --region $REGION --resources ${INSTANCE_ID} --tags "Key=AnsibleState,Value='${ANSIBLE_STATUS}'"
 
-
+exit 0
