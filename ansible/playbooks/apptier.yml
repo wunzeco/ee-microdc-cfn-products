@@ -3,6 +3,14 @@
   hosts: localhost
   vars: 
     java_package: openjdk-8-jdk
+    app_name: products
+    app_version: 0.0.1
+    #app_artifact_url: Sort this out
+
+  pre_tasks:
+    - name: Fetch mongo host
+      command: echo 'Fetch mongo host and set app_mongo_host var'
 
   roles:
     - wunzeco.java
+    - appdeploy
