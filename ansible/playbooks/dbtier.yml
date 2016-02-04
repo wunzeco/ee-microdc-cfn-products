@@ -1,0 +1,10 @@
+- name: Apptier instance
+  sudo: yes
+  hosts: localhost
+  vars: 
+    java_package: openjdk-8-jdk
+
+  tasks:
+    command: echo "Yaaaah"
+  #roles:
+  #  - wunzeco.java

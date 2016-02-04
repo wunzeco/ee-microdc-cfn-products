@@ -106,10 +106,9 @@ template do
   parameter 'NatAZ2IpAddress',
     :Type => 'String'
 
-  parameter 'HostedZone',
-    :Description => 'Hosted Zone to update',
+  parameter 'AppTierSecurityGroup',
+    :Description => 'AppTier Security Group',
     :Type => 'String',
-    :ConstraintDescription => 'must contain only alphanumeric characters.',
     :AllowedPattern => '[a-zA-Z0-9-\.]*'
 
   # Include Mappings under maps/*
@@ -119,61 +118,6 @@ template do
   end
 
   # Resource creation
-
-  resource "ELBSecurityGroup",
-    :Type => "AWS::CloudFormation::Stack",
-    :Properties => {
-      :TemplateURL => join('/', 'https://s3.amazonaws.com', ref('BucketName'), ref('Application'),
-                           ref('EnvironmentName'), 'cloudformation', join('','securitygroup_elb_',ref('Purpose'),'.template')),
-       :Parameters => {
-         :NatAZ1IpAddress => ref('NatAZ1IpAddress'),
-         :NatAZ2IpAddress => ref('NatAZ2IpAddress'),
-         :EnvironmentName => ref('EnvironmentName'),
-         :Application => ref('Application'),
-         :VPC => ref('VPC'),
-         :Purpose => ref('Purpose'),       
-         :Category => ref('Category'),
-       }
-    }
-
-  resource "ElasticLoadBalancer",
-    :Type => "AWS::ElasticLoadBalancing::LoadBalancer",
-    :Properties => {
-      :LoadBalancerName => join('-',ref('Application'),ref('EnvironmentName'),'elb','public',ref('Purpose')),
-      :Scheme => 'internet-facing',
-      :SecurityGroups => [ get_att('ELBSecurityGroup','Outputs.SecurityGroup') ],
-      :Subnets => ref('PublicSubnets'),
-      :HealthCheck => {
-         :HealthyThreshold => '2',
-         :Interval => '5',
-         :Target => 'TCP:9080',
-         :Timeout => '2',
-         :UnhealthyThreshold => '2'
-      },
-      :Listeners => [ 
-        { :LoadBalancerPort => "80", :InstancePort => "9080", :Protocol => "TCP" },
-      ],
-      :Tags => [ 
-        { :Key => 'Name', :Value => join('-',ref('Application'),ref('EnvironmentName'),'elb','public',ref('Purpose')) }, 
-        { :Key => 'Environment', :Value => ref('EnvironmentName') }, 
-        { :Key => 'Application', :Value => ref('Application') }, 
-        { :Key => 'Purpose', :Value => ref('Purpose') }, 
-        { :Key => 'Type', :Value => 'public' }, 
-      ],
-    }
-
-  # The Load balancer name
-
-  resource "RecordSet",
-    :Type => "AWS::Route53::RecordSet",
-    :Properties => { 
-      :HostedZoneName => join('',ref('HostedZone'),'.'),
-      :Comment => join('',"DNS name for ELB ",ref('Purpose')),
-      :Name => join('',ref('Application'),'-',ref('EnvironmentName'),'.',ref('HostedZone'),'.'),
-      :Type => "CNAME",
-      :TTL => "60",
-      :ResourceRecords => [ get_att('ElasticLoadBalancer', 'DNSName')]
-    }
 
   # The instance security group
 
@@ -188,7 +132,7 @@ template do
          :Category => ref('Category'),
          :VPC => ref('VPC'),
          :Purpose => ref('Purpose'),
-         :ELBSecurityGroup => get_att('ELBSecurityGroup','Outputs.SecurityGroup') 
+         :AppTierSecurityGroup => ref('AppTierSecurityGroup') 
        }
     }
 
@@ -222,10 +166,9 @@ template do
     :Properties => {
       :VPCZoneIdentifier => ref('PrivateSubnets'),
       :LaunchConfigurationName => ref('LaunchConfig'),
-      :LoadBalancerNames => [ref('ElasticLoadBalancer')],
       :MinSize => '1',
-      :MaxSize => '2',
-      :DesiredCapacity => '2',
+      :MaxSize => '3',
+      :DesiredCapacity => '3',
       :Tags => [
         { :Key => 'Name', :Value => join('-',ref('Application'),ref('EnvironmentName'),'ec2',ref('AnsibleRole')), :PropagateAtLaunch => "true"}, 
         { :Key => 'Environment', :Value => ref('EnvironmentName'), :PropagateAtLaunch => "true"}, 
@@ -256,9 +199,5 @@ template do
         },
       ]
     }
-
-  output 'SecurityGroup',
-    :Value => get_att('SecurityGroup','Outputs.SecurityGroup'),
-    :Description => 'AppTier Security Group Id'
 
 end.exec!

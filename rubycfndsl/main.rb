@@ -350,6 +350,36 @@ template do
       ],
     }
 
+  resource 'DbTierPrivateSubnetAZ1',
+    :Type => 'AWS::EC2::Subnet',
+    :Properties => {
+      :VpcId => ref('VPC'),
+      :CidrBlock => find_in_map(ref('EnvironmentName'), 'DbTierPrivateAZ1', 'CIDR'),
+      :AvailabilityZone => ref('AvailabilityZone1'),
+      :Tags => [
+        { :Key => 'Name', :Value => join('-',ref('Application'),ref('EnvironmentName'),'sn','dbtier','privateAZ1') }, 
+        { :Key => 'Environment', :Value => ref('EnvironmentName') }, 
+        { :Key => 'Application', :Value => ref('Application') }, 
+        { :Key => 'Purpose', :Value => 'privateAZ1' },
+      ],
+  }
+
+  # Create subnet on AZ2 regardless. This is needed in case we need to 
+  # Deploy an RDS instance on the VPC, which requires multiple AZs
+  resource 'DbTierPrivateSubnetAZ2',
+    :Type => 'AWS::EC2::Subnet',
+    :Properties => {
+      :VpcId => ref('VPC'),
+      :CidrBlock => find_in_map(ref('EnvironmentName'), 'DbTierPrivateAZ2', 'CIDR'),
+      :AvailabilityZone => ref('AvailabilityZone2'),
+      :Tags => [
+        { :Key => 'Name', :Value => join('-',ref('Application'),ref('EnvironmentName'),'sn','dbtier','privateAZ2') }, 
+        { :Key => 'Environment', :Value => ref('EnvironmentName') }, 
+        { :Key => 'Application', :Value => ref('Application') }, 
+        { :Key => 'Purpose', :Value => 'privateAZ2' },
+      ],
+    }
+
   # Routing Tables:
     
   resource 'PrivateRouteTableAZ1',
@@ -415,6 +445,21 @@ template do
       :RouteTableId => ref('PrivateRouteTableAZ2'),
     }
 
+  resource 'DbTierPrivateSubnetRouteTableAssociationAZ1',
+    :Type => 'AWS::EC2::SubnetRouteTableAssociation',
+    :Properties => {
+      :SubnetId => ref('DbTierPrivateSubnetAZ1'),
+      :RouteTableId => ref('PrivateRouteTableAZ1'),
+  }
+
+  resource 'DbTierPrivateSubnetRouteTableAssociationAZ2',
+    :Condition => "CreateMultipleAZs",
+    :Type => 'AWS::EC2::SubnetRouteTableAssociation',
+    :Properties => {
+      :SubnetId => ref('DbTierPrivateSubnetAZ2'),
+      :RouteTableId => ref('PrivateRouteTableAZ2'),
+    }
+
   # Hosted Zone:
 
   # resource 'HostedZone',
@@ -445,37 +490,69 @@ template do
   # ###################################################################################################
   # AppTier Stack definition
 
-    resource "AppTierStack",
-    :Type => "AWS::CloudFormation::Stack",
-    :DependsOn => "NatEc2InstanceAZ1v0",
-    :Properties => {
-      :TemplateURL => join("/","https://s3.amazonaws.com",ref('BucketName'),ref('Application'),
-                           ref('EnvironmentName'),'cloudformation','ec2_stack_apptier.template'),
-      :Parameters => {
-        :NatAZ1IpAddress => get_att('NatEc2InstanceAZ1v0','Outputs.PublicIp'),
-        :NatAZ2IpAddress => fn_if('CreateMultipleAZs',
-                                  get_att('NatEc2InstanceAZ2v0','Outputs.PublicIp'),
-                                  get_att('NatEc2InstanceAZ1v0','Outputs.PublicIp')),
-        :EnvironmentName => ref('EnvironmentName'),
-        :Application => ref('Application'),
-        :VPC => ref('VPC'),
-        :PrivateSubnets => fn_if('CreateMultipleAZs',
-                                 join(',',ref('AppTierPrivateSubnetAZ1'),ref('AppTierPrivateSubnetAZ2')),
-                                 ref('AppTierPrivateSubnetAZ1')),
-        :PublicSubnets => fn_if('CreateMultipleAZs',
-                                join(',',ref('PublicSubnetAZ1'),ref('PublicSubnetAZ2')),
-                                ref('PublicSubnetAZ1')),
-        :ImageId => find_in_map('AMI', region, 'default'),
-        :InstanceType => 'm3.medium',
-        :KeyName => 'eemicrodc',
-        :Purpose => 'apptier',
-        :BucketName => ref('BucketName'),
-        :AnsibleRole => "apptier",
-        :Category => ref('Category'),
-        :HostedZone => 'eemicrodc.equalexperts.com',
-        :DefaultSecurityGroup => get_att('DefaultSecurityGroup','Outputs.SecurityGroup')
-      }
+  resource "AppTierStack",
+  :Type => "AWS::CloudFormation::Stack",
+  :DependsOn => "NatEc2InstanceAZ1v0",
+  :Properties => {
+    :TemplateURL => join("/","https://s3.amazonaws.com",ref('BucketName'),ref('Application'),
+                         ref('EnvironmentName'),'cloudformation','ec2_stack_apptier.template'),
+    :Parameters => {
+      :NatAZ1IpAddress => get_att('NatEc2InstanceAZ1v0','Outputs.PublicIp'),
+      :NatAZ2IpAddress => fn_if('CreateMultipleAZs',
+                                get_att('NatEc2InstanceAZ2v0','Outputs.PublicIp'),
+                                get_att('NatEc2InstanceAZ1v0','Outputs.PublicIp')),
+      :EnvironmentName => ref('EnvironmentName'),
+      :Application => ref('Application'),
+      :VPC => ref('VPC'),
+      :PrivateSubnets => fn_if('CreateMultipleAZs',
+                               join(',',ref('AppTierPrivateSubnetAZ1'),ref('AppTierPrivateSubnetAZ2')),
+                               ref('AppTierPrivateSubnetAZ1')),
+      :PublicSubnets => fn_if('CreateMultipleAZs',
+                              join(',',ref('PublicSubnetAZ1'),ref('PublicSubnetAZ2')),
+                              ref('PublicSubnetAZ1')),
+      :ImageId => find_in_map('AMI', region, 'default'),
+      :InstanceType => 'm3.medium',
+      :KeyName => 'eemicrodc',
+      :Purpose => 'apptier',
+      :BucketName => ref('BucketName'),
+      :AnsibleRole => "apptier",
+      :Category => ref('Category'),
+      :HostedZone => 'eemicrodc.equalexperts.com',
+      :DefaultSecurityGroup => get_att('DefaultSecurityGroup','Outputs.SecurityGroup')
     }
+  }
+
+  resource "DbTierStack",
+  :Type => "AWS::CloudFormation::Stack",
+  :DependsOn => "NatEc2InstanceAZ1v0",
+  :Properties => {
+    :TemplateURL => join("/","https://s3.amazonaws.com",ref('BucketName'),ref('Application'),
+                         ref('EnvironmentName'),'cloudformation','ec2_stack_dbtier.template'),
+    :Parameters => {
+      :NatAZ1IpAddress => get_att('NatEc2InstanceAZ1v0','Outputs.PublicIp'),
+      :NatAZ2IpAddress => fn_if('CreateMultipleAZs',
+                                get_att('NatEc2InstanceAZ2v0','Outputs.PublicIp'),
+                                get_att('NatEc2InstanceAZ1v0','Outputs.PublicIp')),
+      :EnvironmentName => ref('EnvironmentName'),
+      :Application => ref('Application'),
+      :VPC => ref('VPC'),
+      :PrivateSubnets => fn_if('CreateMultipleAZs',
+                               join(',',ref('DbTierPrivateSubnetAZ1'),ref('DbTierPrivateSubnetAZ2')),
+                               ref('DbTierPrivateSubnetAZ1')),
+      :PublicSubnets => fn_if('CreateMultipleAZs',
+                              join(',',ref('PublicSubnetAZ1'),ref('PublicSubnetAZ2')),
+                              ref('PublicSubnetAZ1')),
+      :ImageId => find_in_map('AMI', region, 'default'),
+      :InstanceType => 'm3.medium',
+      :KeyName => 'eemicrodc',
+      :Purpose => 'dbtier',
+      :BucketName => ref('BucketName'),
+      :AnsibleRole => "dbtier",
+      :Category => ref('Category'),
+      :DefaultSecurityGroup => get_att('DefaultSecurityGroup','Outputs.SecurityGroup'),
+      :AppTierSecurityGroup => get_att('AppTierStack','Outputs.SecurityGroup')
+    }
+  }
 
 
 end.exec!
