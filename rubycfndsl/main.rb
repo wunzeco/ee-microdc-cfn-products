@@ -522,6 +522,9 @@ template do
     }
   }
 
+  # ###################################################################################################
+  # DbTier Stack definition
+  
   resource "DbTierStack",
   :Type => "AWS::CloudFormation::Stack",
   :DependsOn => "NatEc2InstanceAZ1v0",
