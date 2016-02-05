@@ -1,4 +1,4 @@
 Common
 ======
 
-Applies common configuration.
+Applies common configuration (custom).
