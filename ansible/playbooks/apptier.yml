@@ -8,8 +8,15 @@
     #app_artifact_url: Sort this out
 
   pre_tasks:
-    - name: Fetch mongo host
-      command: echo 'Fetch mongo host and set app_mongo_host var'
+    - name: Get region
+      shell: curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | sed -n '/region/ s/.*region.*"\(.*\)"$/\1/p'
+      register: r
+
+    #- name: Fetch mongo host
+    #  shell: bash ./playbooks/shared_files/fetch-dbtier-ips.sh {{ r.stdout }}
+    #  register: m
+
+    #- pause: minutes=2
 
   roles:
     - wunzeco.java
