@@ -59,6 +59,8 @@ template do
       :SecurityGroupIngress => [
         # Local
         { "IpProtocol" => "tcp", "FromPort" => "22", "ToPort" => "22", "CidrIp" => find_in_map(ref('EnvironmentName'),'VPC','CIDR') },
+        # Temporary - DELETEME after testing
+        { "IpProtocol" => "tcp", "FromPort" => "22", "ToPort" => "22", "CidrIp" => '0.0.0.0/0' },
       ],
       :Tags => [
         { :Key => 'Name', :Value => join('-', ref('Application'), ref('EnvironmentName'), 'sg', 'default') },
