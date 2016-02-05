@@ -1,0 +1,4 @@
+Common
+======
+
+Applies common configuration.

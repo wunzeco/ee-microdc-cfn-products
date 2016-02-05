@@ -1,0 +1,12 @@
+---
+
+- name: Create custom scripts directory
+  file: path={{ common_custom_scripts_dir }} owner=root group=root mode=0755 state=directory
+
+- name: Create ansible config auto-update script
+  copy: src=ansible-config-auto-update.sh dest={{ common_custom_scripts_dir }}/ansible-config-auto-update.sh owner=root group=root mode=0755
+
+- name: Create cron job for ansible config auto-update
+  cron: name="Ansible config auto-update" user=root 
+        job="{{ common_custom_scripts_dir }}/ansible-config-auto-update.sh"
+        cron_file="ansible-config-auto-update"
