@@ -31,21 +31,18 @@ fi
 
 export INSTANCE_ID=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
 
-export ANSIBLE_ROLE=$(aws ec2 describe-tags --region $REGION \
-  --filters "Name=resource-id,Values=${INSTANCE_ID}" "Name=key,Values=AnsibleRole" | \
-  grep Value|sed -r 's%.*Value": "(.*)",.*%\1%g')
+get_tag_data() {
+	tag=$1
+	data=$(aws ec2 describe-tags --region $REGION \
+		--filters  "Name=resource-id,Values=${INSTANCE_ID}" "Name=key,Values=$tag" \
+		--output text --query 'Tags[*].Value')
+	echo $data
+}
 
-export BUCKET_NAME=$(aws ec2 describe-tags --region $REGION \
-  --filters "Name=resource-id,Values=${INSTANCE_ID}" "Name=key,Values=BucketName" | \
-  grep Value|sed -r 's%.*Value": "(.*)",.*%\1%g')
-
-export APPLICATION=$(aws ec2 describe-tags --region $REGION \
-  --filters "Name=resource-id,Values=${INSTANCE_ID}" "Name=key,Values=Application" | \
-  grep Value|sed -r 's%.*Value": "(.*)",.*%\1%g')
-
-export ENVIRONMENT=$(aws ec2 describe-tags --region $REGION \
-  --filters "Name=resource-id,Values=${INSTANCE_ID}" "Name=key,Values=Environment" | \
-  grep Value|sed -r 's%.*Value": "(.*)",.*%\1%g')
+export ANSIBLE_ROLE=$(get_tag_data AnsibleRole)
+export BUCKET_NAME=$(get_tag_data BucketName)
+export APPLICATION=$(get_tag_data Application)
+export ENVIRONMENT=$(get_tag_data Environment)
 
 ################################################################################
 # Create ee-microdc configuration file
