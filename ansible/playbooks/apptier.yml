@@ -12,11 +12,16 @@
       shell: curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | sed -n '/region/ s/.*region.*"\(.*\)"$/\1/p'
       register: r
 
-    #- name: Fetch mongo host
-    #  shell: bash ./playbooks/shared_files/fetch-dbtier-ips.sh {{ r.stdout }}
-    #  register: m
+    - debug: var=r
 
-    #- pause: minutes=2
+    - name: Fetch mongo host
+      shell: bash ./playbooks/shared_files/fetch-dbtier-ips.sh {{ r.stdout }}
+      register: m
+
+    - debug: msg="{{ m.stdout.split(' ')|first }}"
+
+    - set_fact: app_mongo_host="{{ m.stdout.split(' ')|first }}"
+
 
   roles:
     - wunzeco.java
