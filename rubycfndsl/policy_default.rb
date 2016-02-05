@@ -101,4 +101,21 @@ template do
       },
     }
 
+  resource 'DIIAMPolicy',
+    :Type => 'AWS::IAM::Policy',
+    :Properties => {
+      :PolicyName => "DescribeInstances",
+      :Roles => [ ref('Role') ],
+      :PolicyDocument => {
+        :Version => "2012-10-17",
+        :Statement => [ {    
+          :Effect => "Allow",
+          :Action => [
+            "ec2:DescribeInstances",
+          ],
+          :Resource => ["*"]
+        } ]
+      },
+    }
+
 end.exec!
