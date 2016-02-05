@@ -24,5 +24,6 @@
 
 
   roles:
+    - common
     - wunzeco.java
     - appdeploy

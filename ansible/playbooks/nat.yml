@@ -8,4 +8,5 @@
     - iptables_raw_rules: 
         - "-t nat -A POSTROUTING -o eth0 -s 10.0.0.0/8 -j MASQUERADE" 
   roles:
+    - common
     - {role: Stouts.iptables, tags: iptables}
