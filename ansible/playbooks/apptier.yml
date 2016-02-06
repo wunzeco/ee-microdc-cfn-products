@@ -24,6 +24,6 @@
 
 
   roles:
-    - common
+    - ee-common
     - wunzeco.java
     - appdeploy

@@ -8,3 +8,7 @@
 - src: https://github.com/wunzeco/ansible-appdeploy
   version: master
   name: appdeploy
+
+- src: https://github.com/wunzeco/ansible-ee-common
+  version: master
+  name: ee-common

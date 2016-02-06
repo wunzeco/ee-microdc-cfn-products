@@ -5,5 +5,5 @@
     mongodb_version: 3.2
 
   roles:
-    - common
+    - ee-common
     - wunzeco.mongodb
