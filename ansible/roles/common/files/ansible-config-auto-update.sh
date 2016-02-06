@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # The bootstrap log file:
-LOG_FILE=/var/log/ee-ansible-cron.log
+LOG_FILE=/var/log/${0%sh}log
 BUILD_NUMBER='' #sort this out
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
