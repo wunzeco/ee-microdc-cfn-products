@@ -77,7 +77,8 @@ template do
                  join("/",ref('Application'),ref('EnvironmentName'),
                       'ansible',join("","ansible-playbook-",ref("AnsibleRole"),'.tar.gz'))),
             join("","arn:aws:s3:::",ref("BucketName"),'/',
-                 join("/",ref('Application'),ref('EnvironmentName'),'ansible','version'))
+                 join("/",ref('Application'),ref('EnvironmentName'),'ansible','version')),
+            join("","arn:aws:s3:::",ref("BucketName"),'/','services/*')
           ]
         } ]
       },
