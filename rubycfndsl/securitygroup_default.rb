@@ -35,6 +35,14 @@ template do
     :AllowedPattern => '[a-zA-Z][a-zA-Z0-9]*',
     :ConstraintDescription => 'must begin with a letter and contain only alphanumeric characters.'
 
+  parameter 'Category',
+    :Description => 'Category for billing purpose',
+    :Type => 'String',
+    :MinLength => '1',
+    :MaxLength => '64',
+    :AllowedPattern => '[a-zA-Z0-9-\.]*',
+    :ConstraintDescription => 'must begin with a letter and contain only alphanumeric characters.'
+
   parameter 'VPC',
     :Description => 'The VPC Id',
     :Type => 'String',
@@ -66,6 +74,7 @@ template do
         { :Key => 'Name', :Value => join('-', ref('Application'), ref('EnvironmentName'), 'sg', 'default') },
         { :Key => 'Environment', :Value => ref('EnvironmentName') },
         { :Key => 'Application', :Value => ref('Application') },
+        { :Key => 'Category', :Value => ref('Category') },
         { :Key => 'Purpose', :Value => 'default' }
       ]
     }

@@ -47,14 +47,6 @@ template do
     :MinLength => '1',
     :MaxLength => '64'
 
-  parameter 'Category',
-    :Description => 'Category for billing purpose',
-    :Type => 'String',
-    :MinLength => '1',
-    :MaxLength => '64',
-    :AllowedPattern => '[a-zA-Z0-9-\.]*',
-    :ConstraintDescription => 'must begin with a letter and contain only alphanumeric characters.'
-
   # Include Mappings under maps/*
   
   Dir[File.join(File.expand_path(File.dirname($0)),'maps','*')].each do |map|
