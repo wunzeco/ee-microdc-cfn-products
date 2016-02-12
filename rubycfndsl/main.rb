@@ -12,7 +12,7 @@ environment = ENV['EV_ENVIRONMENT'] || fail('error: no EV_ENVIRONMENT provided')
 application = ENV['EV_APPLICATION'] || fail('error: no EV_APPLICATION provided')
 bucketname = ENV['EV_BUCKET_NAME'] || fail('error: no EV_BUCKET_NAME provided')
 region = ENV['AWS_DEFAULT_REGION'] || 'eu-west-1'
-category = 'ee-microdc'
+category = 'eemicrodc'
 
 template do
 
