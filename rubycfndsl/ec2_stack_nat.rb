@@ -140,7 +140,7 @@ template do
         { :Key => 'Environment', :Value => ref('EnvironmentName') }, 
         { :Key => 'AnsibleRole', :Value => ref('AnsibleRole')}, 
         { :Key => 'Application', :Value => ref('Application') }, 
-        { :Key => 'Category', :Value => ref('Category') }, 
+        { :Key => 'category', :Value => ref('Category') }, 
         { :Key => 'Purpose', :Value => ref('Purpose') }, 
         { :Key => 'BucketName', :Value => ref('BucketName') },
       ],

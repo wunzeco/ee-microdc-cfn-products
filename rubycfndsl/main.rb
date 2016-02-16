@@ -139,7 +139,7 @@ template do
         { :Key => 'Name', :Value => join('-',ref('Application'),ref('EnvironmentName'),'vpc') }, 
         { :Key => 'Environment', :Value => ref('EnvironmentName') }, 
         { :Key => 'Application', :Value => ref('Application') }, 
-        { :Key => 'Category', :Value => ref('Category') }, 
+        { :Key => 'category', :Value => ref('Category') }, 
       ],
     }
 
@@ -150,7 +150,7 @@ template do
         { :Key => 'Name', :Value => join('-',ref('Application'),ref('EnvironmentName'),'igw') }, 
         { :Key => 'Environment', :Value => ref('EnvironmentName') }, 
         { :Key => 'Application', :Value => ref('Application') }, 
-        { :Key => 'Category', :Value => ref('Category') }, 
+        { :Key => 'category', :Value => ref('Category') }, 
       ],
     }
 
@@ -174,7 +174,7 @@ template do
         { :Key => 'Name', :Value => join('-',ref('Application'),ref('EnvironmentName'),'sn','publicAZ1') }, 
         { :Key => 'Environment', :Value => ref('EnvironmentName') }, 
         { :Key => 'Application', :Value => ref('Application') }, 
-        { :Key => 'Category', :Value => ref('Category') }, 
+        { :Key => 'category', :Value => ref('Category') }, 
         { :Key => 'Purpose', :Value => 'publicAZ1' },
       ],
     }
@@ -190,7 +190,7 @@ template do
         { :Key => 'Name', :Value => join('-',ref('Application'),ref('EnvironmentName'),'sn','publicAZ2',) }, 
         { :Key => 'Environment', :Value => ref('EnvironmentName') }, 
         { :Key => 'Application', :Value => ref('Application') }, 
-        { :Key => 'Category', :Value => ref('Category') }, 
+        { :Key => 'category', :Value => ref('Category') }, 
         { :Key => 'Purpose', :Value => 'publicAZ2' },
       ],
     }
@@ -204,7 +204,7 @@ template do
         { :Key => 'Name', :Value => join('-',ref('Application'),ref('EnvironmentName'),'rt','public') }, 
         { :Key => 'Environment', :Value => ref('EnvironmentName') }, 
         { :Key => 'Application', :Value => ref('Application') }, 
-        { :Key => 'Category', :Value => ref('Category') }, 
+        { :Key => 'category', :Value => ref('Category') }, 
         { :Key => 'Purpose', :Value => 'public' },
       ],
     }
@@ -339,7 +339,7 @@ template do
         { :Key => 'Name', :Value => join('-',ref('Application'),ref('EnvironmentName'),'sn','apptier','privateAZ1') }, 
         { :Key => 'Environment', :Value => ref('EnvironmentName') }, 
         { :Key => 'Application', :Value => ref('Application') }, 
-        { :Key => 'Category', :Value => ref('Category') }, 
+        { :Key => 'category', :Value => ref('Category') }, 
         { :Key => 'Purpose', :Value => 'privateAZ1' },
       ],
   }
@@ -356,7 +356,7 @@ template do
         { :Key => 'Name', :Value => join('-',ref('Application'),ref('EnvironmentName'),'sn','apptier','privateAZ2') }, 
         { :Key => 'Environment', :Value => ref('EnvironmentName') }, 
         { :Key => 'Application', :Value => ref('Application') }, 
-        { :Key => 'Category', :Value => ref('Category') }, 
+        { :Key => 'category', :Value => ref('Category') }, 
         { :Key => 'Purpose', :Value => 'privateAZ2' },
       ],
     }
@@ -371,7 +371,7 @@ template do
         { :Key => 'Name', :Value => join('-',ref('Application'),ref('EnvironmentName'),'sn','dbtier','privateAZ1') }, 
         { :Key => 'Environment', :Value => ref('EnvironmentName') }, 
         { :Key => 'Application', :Value => ref('Application') }, 
-        { :Key => 'Category', :Value => ref('Category') }, 
+        { :Key => 'category', :Value => ref('Category') }, 
         { :Key => 'Purpose', :Value => 'privateAZ1' },
       ],
   }
@@ -388,7 +388,7 @@ template do
         { :Key => 'Name', :Value => join('-',ref('Application'),ref('EnvironmentName'),'sn','dbtier','privateAZ2') }, 
         { :Key => 'Environment', :Value => ref('EnvironmentName') }, 
         { :Key => 'Application', :Value => ref('Application') }, 
-        { :Key => 'Category', :Value => ref('Category') }, 
+        { :Key => 'category', :Value => ref('Category') }, 
         { :Key => 'Purpose', :Value => 'privateAZ2' },
       ],
     }
@@ -403,7 +403,7 @@ template do
         { :Key => 'Name', :Value => join('-',ref('Application'),ref('EnvironmentName'),'rt','privateAZ1') }, 
         { :Key => 'Environment', :Value => ref('EnvironmentName') }, 
         { :Key => 'Application', :Value => ref('Application') }, 
-        { :Key => 'Category', :Value => ref('Category') }, 
+        { :Key => 'category', :Value => ref('Category') }, 
         { :Key => 'Purpose', :Value => 'privateAZ1' },
         { :Key => 'AvailabilityZone', :Value => ref('AvailabilityZone1') },
       ],
@@ -418,7 +418,7 @@ template do
         { :Key => 'Name', :Value => join('-',ref('Application'),ref('EnvironmentName'),'rt','privateAZ2') }, 
         { :Key => 'Environment', :Value => ref('EnvironmentName') }, 
         { :Key => 'Application', :Value => ref('Application') }, 
-        { :Key => 'Category', :Value => ref('Category') }, 
+        { :Key => 'category', :Value => ref('Category') }, 
         { :Key => 'Purpose', :Value => 'privateAZ2' },
         { :Key => 'AvailabilityZone', :Value => ref('AvailabilityZone2') },
       ],
@@ -487,7 +487,7 @@ template do
   #       { :Key => 'Name', :Value => join('-',ref('Application'),ref('EnvironmentName'),'zone') }, 
   #       { :Key => 'Environment', :Value => ref('EnvironmentName') }, 
   #       { :Key => 'Application', :Value => ref('Application') }, 
-  #       { :Key => 'Category', :Value => ref('Category') },
+  #       { :Key => 'category', :Value => ref('Category') },
   #     ],
   #     :Name => join('.', ref('EnvironmentName'), ref('Application'), 'microdc', 'internal'),
   #     :VPCs => [ { :VPCId => ref('VPC'), :VPCRegion => region } ]

@@ -87,7 +87,7 @@ template do
         { :Key => 'Environment', :Value => ref('EnvironmentName') },
         { :Key => 'Application', :Value => ref('Application') },
         { :Key => 'Purpose', :Value => ref('Purpose') },
-        { :Key => 'Category', :Value => ref('Category') }
+        { :Key => 'category', :Value => ref('Category') }
       ]
     }
 

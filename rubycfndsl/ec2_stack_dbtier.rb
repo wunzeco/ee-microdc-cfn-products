@@ -173,7 +173,7 @@ template do
         { :Key => 'Environment', :Value => ref('EnvironmentName'), :PropagateAtLaunch => "true"}, 
         { :Key => 'AnsibleRole', :Value => ref('AnsibleRole'), :PropagateAtLaunch => "true"}, 
         { :Key => 'Application', :Value => ref('Application'), :PropagateAtLaunch => "true"}, 
-        { :Key => 'Category', :Value => ref('Category'), :PropagateAtLaunch => "true"}, 
+        { :Key => 'category', :Value => ref('Category'), :PropagateAtLaunch => "true"}, 
         { :Key => 'BucketName', :Value => ref('BucketName'), :PropagateAtLaunch => "true"}, 
         { :Key => 'Purpose', :Value => ref('Purpose'), :PropagateAtLaunch => "true"}, 
       ]

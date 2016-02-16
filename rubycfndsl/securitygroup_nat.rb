@@ -79,7 +79,7 @@ template do
         { :Key => 'Name', :Value => join('-', ref('Application'), ref('EnvironmentName'), 'sg', ref('Purpose')) },
         { :Key => 'Environment', :Value => ref('EnvironmentName') },
         { :Key => 'Application', :Value => ref('Application') },
-        { :Key => 'Category', :Value => ref('Category') },
+        { :Key => 'category', :Value => ref('Category') },
         { :Key => 'Purpose', :Value => ref('Purpose') }
       ]
     }
