@@ -1,6 +1,6 @@
 # from galaxy
 - src: ogonna.iwunze.docker
-- src: ogonna.iwunze.jenkins
+- src: wunzeco.jenkins
 - src: wunzeco.java
 - src: wunzeco.mongodb
 
